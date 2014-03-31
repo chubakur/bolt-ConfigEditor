@@ -1,0 +1,22 @@
+{% include '_header.twig' with { 'active':'settings' } %}
+
+
+<div class="row-fluid">
+    <div class="span8">
+
+        <h1><strong>{{ __('Config editor') }}</strong></h1>
+
+        {{ form(form) }}
+    </div>
+
+</div>
+
+<div class="modal hide" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-body">
+        <p>&nbsp;</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">{{ __("Close") }}</button>
+    </div>
+</div>
+{% include '_footer.twig' %}
