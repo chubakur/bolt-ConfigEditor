@@ -47,6 +47,23 @@ class Extension extends \Bolt\BaseExtension
     }
 
     public function configEditor(){
+        $currentUser    = $this->app['users']->getCurrentUser();
+        $currentUserId  = $currentUser['id'];
+        $this->authorized = false;
+        if (!isset($this->config['permissions']) || !is_array($this->config['permissions'])) {
+            $this->config['permissions'] = array('root', 'admin', 'developer');
+        } else {
+            $this->config['permissions'][] = 'root';
+        }
+        foreach ($this->config['permissions'] as $role) {
+            if ($this->app['users']->hasRole($currentUserId, $role)) {
+                $this->authorized = true;
+                break;
+            }
+        }
+        if ( !$this->authorized ){
+            return new Response();
+        }
         $file = BOLT_CONFIG_DIR . '/config.yml';
         if (@!is_readable($file) || !@is_writable($file)) {
             throw new \Exception(
