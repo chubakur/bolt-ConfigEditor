@@ -74,7 +74,10 @@ class Extension extends \Bolt\BaseExtension
         $this->app['twig.loader.filesystem']->addPath(__DIR__.'/views/', 'ConfigEditor');
         $fb = $this->app['form.factory']->createBuilder('form');
         foreach ( $this->app['config']->get($this->config['parameters']) as $key=>$value ){
-            $fb->add($key, 'text', array('required'=>true, 'data'=>$value));
+            if ( !is_array($value) )
+                $value = array('value'=>$value);
+            $value = array_merge(array('type'=>'text', 'label'=>$key),$value);
+            $fb->add($key, $value['type'], array('required'=>true, 'data'=>$value['value'], 'label'=>$value['label']));
         }
         $fb->add('submit', 'submit');
         $form = $fb->getForm();
@@ -93,7 +96,11 @@ class Extension extends \Bolt\BaseExtension
             foreach ($this->app['request']->get('form') as $key=>$value){
                 if( $key === "submit" || $key === "_token" )
                     continue;
-                $sdata[$key] = $value;
+                if(is_array($sdata[$key])){
+                    $sdata[$key]['value'] = $value;
+                }else{
+                    $sdata[$key] = $value;
+                }
             }
             $dumper = new YamlDumper();
             $dumper->setIndentation(2);
