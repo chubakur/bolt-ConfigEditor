@@ -30,7 +30,7 @@ class Extension extends \Bolt\BaseExtension
             'author'        => "Andrey Pitko",
             'link'          => "http://artvisio.com",
             'email'         => 'chubakur@gmail.com',
-            'version'       => "0.1",
+            'version'       => "0.2",
 
             'required_bolt_version' => "1.4",
             'highest_bolt_version'  => "1.4.3",
