@@ -1,2 +1,49 @@
-path: /admin/service/test/config
-parameters: 'general/parameters'
+path: /bolt/service/test/config
+parameters:
+  phone:
+    value: '8 (8793) 39-22-50'
+    label: 'Номер телефона'
+  vk:
+    value: 'http://vk.com/opartgallery'
+    label: Вконтакте
+  google:
+    value: 'http://google.com'
+    label: Google+
+  twitter:
+    value: 'http://twitter.com'
+    label: Twitter
+  foursquare:
+    value: 'http://ya.ru'
+    label: Foursquare
+  make_accept:
+    value: 'Принят - Ваш заказ комплектуется линзами и готовится к передаче в мастерскую'
+    label: 'Текст для заказов на изготовление: принят'
+    type: textarea
+  make_work:
+    value: 'В работе - Ваши очки изготавливаются в мастерской'
+    type: textarea
+    label: 'Текст для заказов на изготовление: в работе'
+  make_ready:
+    value: 'Готов - очки изготовлены и Вы можете забрать их в галерее оптики «ОпАрт» по адресу пр. Кирова, 78 (//адрес со ссылкой на страницу “Как нас найти”). Не забудьте взять бланк заказа.'
+    type: textarea
+    label: 'Текст для заказов на изготовление: готов'
+  make_close:
+    type: textarea
+    value: 'Выполнен - заказ выдан клиенту'
+    label: 'Текст для заказов на изготовление: выполнен'
+  fix_accept:
+    type: textarea
+    value: 'Принят - Ваш заказ находится в очереди на ремонт у мастера'
+    label: 'Текст для заказов на ремонт: принят'
+  fix_work:
+    type: textarea
+    value: 'В работе - мастер по ремонту работает с Вашими очками'
+    label: 'Текст для заказов на ремонт: в работе'
+  fix_ready:
+    type: textarea
+    value: 'Готов - очки готовы и Вы можете забрать их в галерее оптики «ОпАрт» по адресу пр. Кирова, 78 . Не забудьте взять бланк заказа.'
+    label: 'Текст для заказов на ремонт: готов'
+  fix_close:
+    type: textarea
+    value: 'Выполнен - заказ выдан клиенту'
+    label: 'Текст для заказов на ремонт: выполнен'

@@ -14,7 +14,7 @@ class Extension extends \Bolt\BaseExtension
     private $authorized = false;
     private $backupDir;
     private $translationDir;
-    public  $config;
+    public $config;
 
     /**
      * @return array
@@ -23,32 +23,42 @@ class Extension extends \Bolt\BaseExtension
     {
 
         return array(
-            'name'          => "ConfigEditor",
-            'description'   => "a visual config editor",
-            'tags'          => array('config', 'editor', 'admin', 'tool'),
-            'type'          => "Administrative Tool",
-            'author'        => "Andrey Pitko",
-            'link'          => "http://artvisio.com",
-            'email'         => 'chubakur@gmail.com',
-            'version'       => "0.1",
-
+            'name' => "ConfigEditor",
+            'description' => "a visual config editor",
+            'tags' => array('config', 'editor', 'admin', 'tool'),
+            'type' => "Administrative Tool",
+            'author' => "Andrey Pitko",
+            'link' => "http://artvisio.com",
+            'email' => 'chubakur@gmail.com',
+            'version' => "0.2",
             'required_bolt_version' => "1.4",
-            'highest_bolt_version'  => "1.4.3",
-            'first_releasedate'     => "2014-04-01",
-            'latest_releasedate'    => "2014-04-01"
+            'highest_bolt_version' => "1.4.3",
+            'first_releasedate' => "2014-04-01",
+            'latest_releasedate' => "2014-04-14"
         );
 
     }
 
-    public function initialize(){
+    public function initialize()
+    {
         $this->config = $this->getConfig();
         $this->app->match($this->config['path'], array($this, 'configEditor'));
         $this->addMenuOption(__('ConfigEditor'), $this->config['path'], "icon-list");
+        $this->addTwigFunction('getParameter', 'getParameter');
     }
 
-    public function configEditor(){
-        $currentUser    = $this->app['users']->getCurrentUser();
-        $currentUserId  = $currentUser['id'];
+    public function getParameter($key){
+        if ( !isset ($this->config['parameters'][$key]))
+            throw new \Exception("Wrong parameter");
+        if ( is_array($this->config['parameters'][$key]))
+            return $this->config['parameters'][$key]['value'];
+        return $this->config['parameters'][$key];
+    }
+
+    public function configEditor()
+    {
+        $currentUser = $this->app['users']->getCurrentUser();
+        $currentUserId = $currentUser['id'];
         $this->authorized = false;
         if (!isset($this->config['permissions']) || !is_array($this->config['permissions'])) {
             $this->config['permissions'] = array('root', 'admin', 'developer');
@@ -61,44 +71,45 @@ class Extension extends \Bolt\BaseExtension
                 break;
             }
         }
-        if ( !$this->authorized ){
+        if (!$this->authorized) {
             return new Response();
         }
-        $file = BOLT_CONFIG_DIR . '/config.yml';
+        $file = __DIR__ . '/config.yml';
         if (@!is_readable($file) || !@is_writable($file)) {
             throw new \Exception(
-                __("The file '%s' is not writable. You will have to use your own editor to make modifications to this file.",
-                    array('%s' => $file)));
+                __(
+                    "The file '%s' is not writable. You will have to use your own editor to make modifications to this file.",
+                    array('%s' => $file)
+                ));
         }
-        $this->app['twig.loader.filesystem']->addPath(BOLT_PROJECT_ROOT_DIR."/app/view");
-        $this->app['twig.loader.filesystem']->addPath(__DIR__.'/views/', 'ConfigEditor');
+        $this->app['twig.loader.filesystem']->addPath(BOLT_PROJECT_ROOT_DIR . "/app/view");
+        $this->app['twig.loader.filesystem']->addPath(__DIR__ . '/views/', 'ConfigEditor');
         $fb = $this->app['form.factory']->createBuilder('form');
-        foreach ( $this->app['config']->get($this->config['parameters']) as $key=>$value ){
-            if ( !is_array($value) )
-                $value = array('value'=>$value);
-            $value = array_merge(array('type'=>'text', 'label'=>$key),$value);
-            $fb->add($key, $value['type'], array('required'=>true, 'data'=>$value['value'], 'label'=>$value['label']));
+        foreach ($this->config['parameters'] as $key => $value) {
+            if (!is_array($value))
+                    {
+                        $value = array('value' => $value);
+                    }
+            $value = array_merge(array('type' => 'text', 'label' => $key), $value);
+            $fb->add(
+                $key,
+                $value['type'],
+                array('required' => true, 'data' => $value['value'], 'label' => $value['label'])
+            );
         }
         $fb->add('submit', 'submit');
         $form = $fb->getForm();
-        if ( $this->app['request']->isMethod('POST') ){
+        if ($this->app['request']->isMethod('POST')) {
             $parser = new YamlParser();
             $data = $parser->parse(@file_get_contents($file));
-            $arr = explode('/', $this->config['parameters']);
-            if ( count($arr) < 2 )
-                throw new \Exception('Wrong parameters');
-            $sdata = null;
-            for ( $i = 1; $i < count($arr); ++$i ){
-                $key = $arr[$i];
-                $sdata = &$data[$key];
-            }
+            $sdata = &$data['parameters'];
             $form->bind($this->app['request']);
-            foreach ($this->app['request']->get('form') as $key=>$value){
-                if( $key === "submit" || $key === "_token" )
+            foreach ($this->app['request']->get('form') as $key => $value) {
+                if ($key === "submit" || $key === "_token")
                     continue;
-                if(is_array($sdata[$key])){
+                if (is_array($sdata[$key])) {
                     $sdata[$key]['value'] = $value;
-                }else{
+                } else {
                     $sdata[$key] = $value;
                 }
             }
@@ -108,9 +119,13 @@ class Extension extends \Bolt\BaseExtension
             @file_put_contents($file, $yaml);
 
         }
-        return $this->app['render']->render('@ConfigEditor/base.twig', array(
-            'form' => $form->createView()
-        ));
+
+        return $this->app['render']->render(
+            '@ConfigEditor/base.twig',
+            array(
+                'form' => $form->createView()
+            )
+        );
     }
 
 }
