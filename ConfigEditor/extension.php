@@ -29,12 +29,12 @@ class Extension extends \Bolt\BaseExtension
             'type' => "Administrative Tool",
             'author' => "Andrey Pitko",
             'link' => "http://artvisio.com",
-            'email' => 'chubakur@gmail.com',
+            'email' => 'andrey.p@artvisio.com',
             'version' => "0.3",
             'required_bolt_version' => "1.4",
             'highest_bolt_version' => "1.4.3",
             'first_releasedate' => "2014-04-01",
-            'latest_releasedate' => "2014-04-14"
+            'latest_releasedate' => "2014-04-16"
         );
 
     }
@@ -90,11 +90,11 @@ class Extension extends \Bolt\BaseExtension
                     {
                         $value = array('value' => $value);
                     }
-            $value = array_merge(array('type' => 'text', 'label' => $key), $value);
+            $value = array_merge(array('type' => 'text', 'label' => $key, 'required' => true), $value);
             $fb->add(
                 $key,
                 $value['type'],
-                array('required' => true, 'data' => $value['value'], 'label' => $value['label'])
+                array('required' => $value['required'], 'data' => $value['value'], 'label' => $value['label'])
             );
         }
         $fb->add('submit', 'submit');
